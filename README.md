@@ -50,19 +50,17 @@ I have marked a few that are strongly suggested.
 
 - R + ggplot2 `<- definitely worth trying`
 - Excel
-- SPSS
-- d3 `<- since the rest of the class uses this, it's a good idea to use it`
-- nvd3
+- d3 `<- since the rest of the class uses this, we're requiring it`
 - Matplotlib
-- Pixi.js
-- Processing
-- Processing.js
+- three.js `<- well, it's a 3d library. not really recommended, but could be "interesting"`
+- p5js `<- good for playing around. not really a chart lib`
 - Tableau
 - Java 2d
 - GNUplot
-- Vega/Vega-lite
-- Flourish
+- Vega-lite <- `<- recently much better. look for the high level js implementations`
+- Flourish <- `<- popular last year`
 - PowerBI
+- SPSS
 
 You may write everything from scratch, or start with demo programs from books or the web. 
 If you do start with code that you found, please identify the source of the code in your README and, most importantly, make non-trivial changes to the code to make it your own so you really learn what you're doing. 
