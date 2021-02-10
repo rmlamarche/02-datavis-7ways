@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Assignment 2 - d3 | Ryan LaMarche</title>
+	<script async src='https://cdnjs.cloudflare.com/ajax/libs/d3/6.5.0/d3.min.js' integrity='sha512-0XfwGD1nxplHpehcSVI7lY+m/5L37PNHDt+DOc7aLFckwPXjnjeA1oeNbru7YeI4VLs9i+ADnnHEhP69C9CqTA==' crossorigin='anonymous'></script>
+	<style>
+		.left-axis {
+			transform-origin: 50% 50%;
+			transform: rotate(-90deg) translate(50%, 3%);
+		}
+	</style>
+	<script>
+		window.addEventListener('load', function() {
+			const width = 500;
+			const height = 500;
+
+			d3.csv('cars-sample.csv').then(result => {
+				const data = result.map(r => ({
+					...r,
+					Weight: parseFloat(r.Weight),
+					MPG: r.MPG === "NA" ? 0 : parseFloat(r.MPG)
+				}));
+				draw(data);
+			}).catch(err => {
+				console.error(err);
+			});
+
+			
+			function draw(data) {
+				const scaleX = d3.scaleLinear()
+					.domain(d3.extent(data, d => d.Weight))
+					.range([30, width - 30]);
+				const scaleY = d3.scaleLinear()
+					.domain(d3.extent(data, d => d.MPG))
+					.range([height - 30, 30]);
+				const scaleW = d3.scaleLinear()
+					.domain(d3.extent(data, d => d.Weight))
+					.range([5, 20]);
+
+				console.log(scaleX(3000));
+
+				const svg = d3.select('#viz');
+				svg.attr('width', width);
+				svg.attr('height', height);
+
+				svg.selectAll('circle')
+					.data(data)
+					.enter()
+					.append('circle')
+					.attr('opacity', 0.5)
+					.attr('cx', d => scaleX(d.Weight))
+					.attr('cy', d => scaleY(d.MPG))
+					.attr('r', d => scaleW(d.Weight))
+
+				const leftAxis = d3.axisLeft(scaleY);
+				leftAxis.ticks(4);
+				svg.append('g')
+					.attr('transform', 'translate(20,0)')
+					.call(leftAxis);
+				svg.append('text')
+				.attr('class', 'left-axis')
+					// .attr('x', 0)
+					// .attr('y', (height - 60) / 2)
+					// .attr('transform-box', 'fill-box')
+					// .attr('transform-origin', 'center')
+					// .attr('transform', `rotate(90)`)
+					.text('MPG')
+			}
+
+		});
+	</script>
+</head>
+<body>
+	<svg id="viz" style="margin: 5%;"></svg>
+</body>
+</html>
