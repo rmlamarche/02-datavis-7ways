@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Assignment 2 - Chart js | Ryan LaMarche</title>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js' integrity='sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==' crossorigin='anonymous'></script>
+	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css' integrity='sha512-/zs32ZEJh+/EO2N1b0PEdoA10JkdC3zJ8L5FTiQu82LR9S/rOQNfQN7U59U9BC12swNeRAz3HSzIL2vpp4fv3w==' crossorigin='anonymous'/>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/patternomaly/1.3.2/patternomaly.min.js' integrity='sha512-Zjnjh2DCl/MrwdZ8FNp25vSbXac3yWUWoMn0CL8qQ/K11HGv7cJ9RGNUiojnSfqVtwbGf+eyqEEjiw2hlHd6iQ==' crossorigin='anonymous'></script>
+	<script>
+		window.addEventListener('load', async function() {
+			const ctx = document.getElementById('viz').getContext('2d');
+			const colors = pattern.generate([
+				'#1f77b4',
+				'#ff7f0e',
+				'#2ca02c',
+				'#d62728',
+				'#265458',
+			]);
+
+			let MAX = -Infinity, MIN = Infinity;
+
+			const data = await fetch('/cars-sample.csv').then(resp => resp.text()).then(text => {
+				const rows = text.split('\r\n');
+				const fields = rows.shift().split(',').map(d => d.replace(/"/g, ''));
+				rows.pop(); // last row is blank string
+				const result = rows.map(r => {
+					const rowData = r.split(',').map(d => d.replace(/"/g, ''));
+					const item = {};
+					for (const i in fields) {
+						item[fields[i]] = rowData[i];
+					}
+					MAX = Math.max(MAX, parseInt(item['Weight']));
+					MIN = Math.min(MIN, parseInt(item['Weight']));
+					return item;
+				});
+				return result;
+			});
+
+			console.log(data);
+			console.log(MIN, MAX);
+
+			const scaleFactor = 10, minRadius = 5;
+			const scaleW = weight => ((weight - MIN) / (MAX - MIN)) * scaleFactor + minRadius;
+
+			// categorize based on mfg
+			const datasets = {};
+			for (const d of data) {
+				if (!(d['Manufacturer'] in datasets)) {
+					datasets[d['Manufacturer']] = [];
+				}
+				datasets[d['Manufacturer']].push({
+					x: parseInt(d['Weight']),
+					y: parseInt(d['MPG']),
+					r: scaleW(parseInt(d['Weight']))
+				});
+
+			}
+
+			const chartData = {
+				datasets: []
+			};
+			let colorCounter = 0;
+			for (const label in datasets) {
+				chartData.datasets.push({
+					label: label,
+					backgroundColor: colors[colorCounter++],
+					data: datasets[label]
+				});
+			}
+
+			console.log(chartData);
+
+			const chart = new Chart(ctx, {
+				type: 'bubble',
+				data: chartData,
+				options: {
+					scales: {
+						yAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'MPG'
+							}
+						}],
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Weight'
+							}
+						}]
+					}
+   			}
+			});
+		});
+	</script>
+</head>
+<body>
+	<div style="width: 75vw; height: 75vh;">
+		<canvas id="viz"></canvas>
+	</div>
+</body>
+</html>
