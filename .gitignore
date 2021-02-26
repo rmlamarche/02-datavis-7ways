@@ -3,3 +3,5 @@ package-lock.json
 .Rdata
 .Rhistory
 .vscode/
+java/out/
+java/.idea
