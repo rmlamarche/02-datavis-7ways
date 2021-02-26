@@ -1,0 +1,44 @@
+{
+	"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+	"description": "A bubble plot",
+	"width": 600,
+	"height": 600,
+	"data": {
+		"url": "/cars-sample.csv",
+		"format": {
+			"type": "csv"
+		}
+	},
+	"params": [
+		{
+			"name": "view",
+			"select": "interval",
+			"bind": "scales"
+		}
+	],
+	"mark": "circle",
+	"encoding": {
+		"y": {
+			"field": "MPG",
+			"type": "quantitative",
+			"scale": {
+				"zero": false
+			}
+		},
+		"x": {
+			"field": "Weight",
+			"type": "quantitative",
+			"scale": {
+				"zero": false
+			}
+		},
+		"size": {
+			"field": "Weight",
+			"type": "quantitative"
+		},
+		"color": {
+			"field": "Manufacturer",
+			"type": "nominal"
+		}
+	}
+}
